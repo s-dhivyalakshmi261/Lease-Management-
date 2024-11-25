@@ -1,0 +1,36 @@
+Apex Class: EmployeeManager.cls
+
+public with sharing class EmployeeManager {
+    public static List<Employee__c> getAllEmployees() {
+        return [SELECT Id, Name, Department_c, Rolec, Emailc FROM Employee_c];
+    }
+    
+    public static void onboardEmployee(Employee__c newEmployee) {
+        insert newEmployee;
+    }
+}
+
+LWC Component: EmployeeList.html
+
+<template>
+    <lightning-card title="Employee Directory" icon-name="standard:people">
+        <template if:true={employees}>
+            <lightning-datatable 
+                key-field="id" 
+                data={employees} 
+                columns={columns}>
+            </lightning-datatable>
+        </template>
+        <template if:false={employees}>
+            <p>No employees found.</p>
+        </template>
+    </lightning-card>
+</template>
+
+Trigger: TaskTrigger.trigger
+
+trigger TaskTrigger on Task__c (after insert, after update) {
+    if (Trigger.isAfter && Trigger.isInsert) {
+        TaskController.notifyTaskAssignment(Trigger.new);
+    }
+}
